@@ -1,28 +1,22 @@
 import js from '@eslint/js';
+import eslintPlugin from 'eslint-plugin-eslint-plugin';
+import packageJson from 'eslint-plugin-package-json/configs/recommended';
+import enforcePackageType from './lib/index.js';
 
 export default [
   js.configs.recommended,
+  eslintPlugin.configs['flat/recommended'],
+  ...enforcePackageType.configs.recommended,
+  packageJson,
+  {
+    files: ['**/*.test.js'],
+    ...eslintPlugin.configs['flat/tests-recommended']
+  },
   {
     files: ['**/*.js'],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module'
-    }
-  },
-  {
-    files: ['package.json'],
-    plugins: {
-      'enforce-package-type': {
-        rules: {
-          'enforce-package-type': (await import('./lib/rules/enforce-package-type.js')).default
-        }
-      }
-    },
-    rules: {
-      'enforce-package-type/enforce-package-type': 'error'
-    },
-    languageOptions: {
-      parser: (await import('jsonc-eslint-parser')).default
     }
   }
 ];

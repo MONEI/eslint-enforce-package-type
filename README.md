@@ -4,6 +4,14 @@ ESLint plugin to enforce package.json type field to be either "module" or "commo
 
 ## Installation
 
+First, install the required peer dependencies:
+
+```bash
+npm install --save-dev eslint@^9.0.0 jsonc-eslint-parser@^2.0.0
+```
+
+Then, install the plugin:
+
 ```bash
 npm install --save-dev eslint-enforce-package-type
 ```
@@ -15,25 +23,39 @@ Add the plugin to your ESLint configuration:
 ```js
 // eslint.config.js
 import enforcePackageType from 'eslint-enforce-package-type';
+import jsoncParser from 'jsonc-eslint-parser';
 
 export default [
   // Use recommended configuration (enforces "module" by default)
-  enforcePackageType.configs.recommended,
+  ...enforcePackageType.configs.recommended,
 
   // Or configure manually
   {
+    files: ['package.json'],
     plugins: {
       'enforce-package-type': enforcePackageType
     },
     rules: {
       // Default to 'module'
-      'enforce-package-type/enforce-package-type': 'error',
-
+      'enforce-package-type/enforce-package-type': 'error'
       // Or enforce 'commonjs'
-      'enforce-package-type/enforce-package-type': ['error', {enforceType: 'commonjs'}]
+      // 'enforce-package-type/enforce-package-type': ['error', { enforceType: 'commonjs' }]
+    },
+    languageOptions: {
+      parser: jsoncParser
     }
   }
 ];
+```
+
+Then run ESLint:
+
+```bash
+# Check for issues
+npx eslint .
+
+# Or automatically fix issues
+npx eslint . --fix
 ```
 
 ## Rule Details
@@ -45,6 +67,14 @@ This rule enforces that the `type` field in package.json is set to either "modul
 The rule accepts an options object with the following properties:
 
 - `enforceType`: The type to enforce ("module" or "commonjs"). Defaults to "module".
+
+### Auto-fix
+
+This rule supports the `--fix` option. When enabled, it will:
+
+- Add the `type` field if it's missing
+- Change the `type` field value to match the enforced type
+- Preserve all other fields and formatting
 
 ### Examples
 
@@ -115,6 +145,9 @@ npm run test:watch
 # Lint files
 npm run lint
 
+# Lint and fix files
+npm run lint:fix
+
 # Format files
 npm run format
 ```
@@ -143,6 +176,35 @@ The test suite includes:
 - Basic functionality tests
 - Edge cases (malformed JSON, invalid types)
 - Auto-fix functionality tests
+
+### Releasing
+
+This project uses [release-it](https://github.com/release-it/release-it) for version management and package publishing.
+
+Available commands:
+
+```bash
+# Dry run (no changes)
+npm run release:dry
+
+# Regular release
+npm run release
+
+# Alpha release
+npm run release:alpha
+
+# Beta release
+npm run release:beta
+```
+
+The release process:
+
+1. Runs tests and linting
+2. Bumps version in package.json
+3. Creates a git tag
+4. Creates a GitHub release
+5. Publishes to npm
+6. Formats files after version bump
 
 ### Contributing
 
