@@ -1,22 +1,26 @@
 import js from '@eslint/js';
 import eslintPlugin from 'eslint-plugin-eslint-plugin';
-import packageJson from 'eslint-plugin-package-json/configs/recommended';
-import enforcePackageType from './lib/index.js';
+import * as tseslint from 'typescript-eslint';
+import enforcePackageType from './dist/index.js';
 
-export default [
-  js.configs.recommended,
-  eslintPlugin.configs['flat/recommended'],
-  ...enforcePackageType.configs.recommended,
-  packageJson,
+export default tseslint.config(
   {
-    files: ['**/*.test.js'],
+    ignores: ['dist/**']
+  },
+  js.configs.recommended,
+  tseslint.configs.recommended,
+  tseslint.configs.strict,
+  tseslint.configs.stylistic,
+  {
+    files: ['**/*.test.{js,ts}'],
     ...eslintPlugin.configs['flat/tests-recommended']
   },
   {
-    files: ['**/*.js'],
+    files: ['**/*.{js,ts}'],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module'
     }
-  }
-];
+  },
+  ...enforcePackageType.configs.recommended
+);

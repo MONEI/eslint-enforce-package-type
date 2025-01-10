@@ -1,5 +1,28 @@
-/** @type {import('eslint').Rule.RuleModule} */
-export default {
+import type {Rule} from 'eslint';
+import type {JSONSchema4} from 'json-schema';
+
+interface PackageJson {
+  type?: string;
+  [key: string]: unknown;
+}
+
+interface RuleOptions {
+  enforceType?: 'module' | 'commonjs';
+}
+
+const schema: JSONSchema4[] = [
+  {
+    type: 'object',
+    properties: {
+      enforceType: {
+        enum: ['module', 'commonjs']
+      }
+    },
+    additionalProperties: false
+  }
+];
+
+const rule: Rule.RuleModule = {
   meta: {
     type: 'problem',
     docs: {
@@ -8,17 +31,7 @@ export default {
       url: 'https://github.com/MONEI/eslint-enforce-package-type/blob/main/docs/rules/enforce-package-type.md'
     },
     fixable: 'code',
-    schema: [
-      {
-        type: 'object',
-        properties: {
-          enforceType: {
-            enum: ['module', 'commonjs']
-          }
-        },
-        additionalProperties: false
-      }
-    ],
+    schema,
     messages: {
       missingType: 'Missing "type" field in package.json',
       invalidType: '"type" field must be "{{ expected }}", but found "{{ actual }}"'
@@ -39,12 +52,12 @@ export default {
         }
 
         try {
-          const options = context.options[0] || {};
+          const options = (context.options[0] as RuleOptions) || {};
           const enforceType = options.enforceType || 'module';
           const source = context.getSourceCode().getText();
 
           // Try to parse package.json content
-          let packageJson;
+          let packageJson: PackageJson;
           try {
             packageJson = JSON.parse(source);
           } catch {
@@ -90,3 +103,5 @@ export default {
     };
   }
 };
+
+export default rule;

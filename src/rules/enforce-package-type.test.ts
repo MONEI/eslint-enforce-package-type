@@ -1,5 +1,6 @@
+import type {AST, Rule} from 'eslint';
 import {RuleTester} from 'eslint';
-import jsoncParser from 'jsonc-eslint-parser';
+import * as jsoncParser from 'jsonc-eslint-parser';
 import {describe, expect, it, vi} from 'vitest';
 import rule from './enforce-package-type.js';
 
@@ -13,15 +14,15 @@ const ruleTester = new RuleTester({
 describe('enforce-package-type', () => {
   describe('rule metadata', () => {
     it('has correct metadata', () => {
-      expect(rule.meta.type).toBe('problem');
-      expect(rule.meta.fixable).toBe('code');
-      expect(rule.meta.docs.description).toBe(
+      expect(rule.meta?.type).toBe('problem');
+      expect(rule.meta?.fixable).toBe('code');
+      expect(rule.meta?.docs?.description).toBe(
         'Enforce package.json type field to be either "module" or "commonjs"'
       );
     });
 
     it('has valid schema', () => {
-      expect(rule.meta.schema).toEqual([
+      expect(rule.meta?.schema).toEqual([
         {
           type: 'object',
           properties: {
@@ -155,14 +156,35 @@ describe('enforce-package-type', () => {
       // For malformed JSON, we'll test the rule directly since RuleTester
       // requires valid JSON for parsing
       const context = {
+        id: 'test',
+        settings: {},
+        parserPath: '',
+        languageOptions: {},
         getFilename: () => 'package.json',
         getSourceCode: () => ({getText: () => '{ invalid json'}),
         report: vi.fn(),
         options: []
+      } as unknown as Rule.RuleContext;
+
+      const program: AST.Program = {
+        type: 'Program',
+        sourceType: 'module',
+        body: [],
+        range: [0, 0] as [number, number],
+        loc: {
+          start: {line: 1, column: 0},
+          end: {line: 1, column: 0}
+        },
+        comments: [],
+        tokens: []
       };
 
-      const program = {};
-      rule.create(context).Program(program);
+      if (rule.create) {
+        const handlers = rule.create(context);
+        if (handlers.Program) {
+          handlers.Program(program);
+        }
+      }
 
       expect(context.report).toHaveBeenCalledWith({
         node: program,
