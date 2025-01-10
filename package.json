@@ -1,6 +1,6 @@
 {
   "name": "eslint-enforce-package-type",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "ESLint plugin to enforce package.json type field (module or commonjs)",
   "keywords": [
     "eslint",
