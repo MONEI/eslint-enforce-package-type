@@ -1,0 +1,70 @@
+{
+  "name": "eslint-enforce-package-type",
+  "version": "1.0.0",
+  "description": "ESLint plugin to enforce package.json type field (module or commonjs)",
+  "main": "lib/index.js",
+  "type": "module",
+  "files": [
+    "lib",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky install",
+    "lint-staged": "lint-staged",
+    "prepublishOnly": "npm run test && npm run lint"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,css,md}": [
+      "prettier --write"
+    ],
+    "*.js": [
+      "eslint --fix"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MONEI/eslint-enforce-package-type.git"
+  },
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "eslint-plugin",
+    "package.json",
+    "type",
+    "module",
+    "commonjs",
+    "esm",
+    "cjs",
+    "package-type"
+  ],
+  "author": "MONEI",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MONEI/eslint-enforce-package-type/issues"
+  },
+  "homepage": "https://github.com/MONEI/eslint-enforce-package-type#readme",
+  "peerDependencies": {
+    "eslint": ">=9.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "eslint": "^9.0.0",
+    "husky": "^8.0.3",
+    "jsonc-eslint-parser": "^2.4.0",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.1.1",
+    "vitest": "^1.1.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
